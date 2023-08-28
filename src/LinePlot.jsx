@@ -13,7 +13,6 @@ function App() {
       d.date = parseTime(d.date);
       d.value = +d.value;
     });
-
     // set the dimensions and margins of the graph
     var margin = { top: 20, right: 20, bottom: 50, left: 70 },
       width = 960 - margin.left - margin.right,
