@@ -67,7 +67,7 @@ function App() {
       .range([height, 0]);
     var yGrid = (g) =>
       g
-        .style("stroke", "gray")
+        .style("stroke", "red")
         .style("stroke-opacity", 0.2)
         .selectAll("line")
         .data(yScale.ticks())
@@ -83,7 +83,7 @@ function App() {
       .range([0, width]);
     var xGrid = (g) =>
       g
-        .style("stroke", "gray")
+        .style("stroke", "red")
         .style("stroke-opacity", 0.2)
         .selectAll("line")
         .data(xScale.ticks())
@@ -108,7 +108,7 @@ function App() {
       .data([data])
       .attr("class", "line")
       .attr("fill", "none")
-      .attr("stroke", "steelblue")
+      .attr("stroke", "black")
       .attr("stroke-width", 1.5)
       .attr("d", valueLine);
 
