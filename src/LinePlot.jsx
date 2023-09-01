@@ -5,12 +5,9 @@ function App() {
   const svgRef = useRef();
   const createGraph = async () => {
     // read from csv and format variables
-    let data = await d3.csv(
-      "https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv"
-    );
-    let parseTime = d3.timeParse("%Y-%m-%d");
+    let data = await d3.csv("http://localhost:3005/sample_ecg_data_d3.csv");
     data.forEach((d) => {
-      d.date = parseTime(d.date);
+      d.date = new Date(d.date);
       d.value = +d.value;
     });
     // set the dimensions and margins of the graph
@@ -48,7 +45,7 @@ function App() {
       })
     );
     y.domain([
-      0,
+      -100,
       d3.max(data, (d) => {
         return d.value;
       }),
@@ -56,7 +53,16 @@ function App() {
     svg
       .append("g")
       .attr("transform", `translate(0, ${height})`)
-      .call(d3.axisBottom(x));
+      .call(
+        d3
+          .axisBottom(x)
+          .ticks(d3.timeMillisecond.every(200))
+          .tickFormat(d3.timeFormat("%I:%M:%S:%L %p"))
+      )
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .style("font-size", "5px")
+      .attr("transform", "rotate(-90)");
     svg.append("g").call(d3.axisLeft(y));
 
     // adding grid lines
@@ -198,7 +204,11 @@ function App() {
         .style("color", "white")
         .style("padding", "5px")
         .html(
-          `${d.date !== undefined ? d.date.toISOString().slice(0, 10) : "N/A"}`
+          `${
+            d.date !== undefined
+              ? new Date(d.date).toISOString().slice(0, 10)
+              : "N/A"
+          }`
         );
     });
 
