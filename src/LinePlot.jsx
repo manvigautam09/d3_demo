@@ -100,6 +100,22 @@ function App() {
         .attr("y2", height);
     svg.append("g").call(xGrid);
 
+    //construct base line
+    var baseline = d3
+      .line()
+      .x((d) => {
+        return x(d.date);
+      })
+      .y(90);
+    svg
+      .append("path")
+      .data([data])
+      .attr("class", "line")
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", 1)
+      .attr("d", baseline);
+
     // add the Line
     var valueLine = d3
       .line()
