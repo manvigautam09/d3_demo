@@ -116,7 +116,7 @@ function App() {
     const circle = svg
       .append("circle")
       .attr("r", 0)
-      .attr("fill", "black")
+      .attr("fill", "green")
       .style("stroke", "white")
       .attr("opacity", 0.7)
       .style("pointer-events", "none");
@@ -126,7 +126,7 @@ function App() {
       .append("line")
       .attr("class", "tooltip-line")
       .attr("id", "tooltip-line-x")
-      .attr("stroke", "black")
+      .attr("stroke", "green")
       .attr("stroke-width", 1)
       .attr("stroke-dasharray", "2,2");
 
@@ -134,7 +134,7 @@ function App() {
       .append("line")
       .attr("class", "tooltip-line")
       .attr("id", "tooltip-line-y")
-      .attr("stroke", "black")
+      .attr("stroke", "green")
       .attr("stroke-width", 1)
       .attr("stroke-dasharray", "2,2");
 
@@ -178,26 +178,39 @@ function App() {
 
       // add in our tooltip
       tooltip
+        .style("display", "block")
         .style("position", "fixed")
         .style("left", `${width + 90}px`)
         .style("top", `${yPos + 20}px`)
-        .style("background", "gray")
+        .style("background", "green")
         .style("border-radius", "5px")
         .style("color", "white")
         .style("padding", "5px")
         .html(`${d.value !== undefined ? d.value.toFixed(2) : "N/A"}`);
 
       tooltipRawDate
+        .style("display", "block")
         .style("position", "fixed")
         .style("left", `${xPos + 60}px`)
         .style("top", `${height + 53}px`)
-        .style("background", "gray")
+        .style("background", "green")
         .style("border-radius", "5px")
         .style("color", "white")
         .style("padding", "5px")
         .html(
           `${d.date !== undefined ? d.date.toISOString().slice(0, 10) : "N/A"}`
         );
+    });
+
+    // listening rectangle mouse leave function
+    listeningRect.on("mouseleave", function () {
+      circle.transition().duration(50).attr("r", 0);
+      tooltip.style("display", "none");
+      tooltipRawDate.style("display", "none");
+      tooltipLineX.attr("x1", 0).attr("x2", 0);
+      tooltipLineY.attr("y1", 0).attr("y2", 0);
+      tooltipLineX.style("display", "none");
+      tooltipLineY.style("display", "none");
     });
   };
 
