@@ -108,7 +108,7 @@ function App() {
       .x((d) => {
         return x(d.date);
       })
-      .y(90);
+      .y(height / 2 - 0.3);
 
     svg
       .append("path")
