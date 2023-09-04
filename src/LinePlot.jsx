@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import "./App.css";
 
 function App() {
   const svgRef = useRef();
@@ -27,12 +28,6 @@ function App() {
 
     // create tooltip div
     const tooltip = d3
-      .select(svgRef.current)
-      .append("div")
-      .attr("class", "tooltip");
-
-    // Create a second tooltip div for raw date
-    const tooltipRawDate = d3
       .select(svgRef.current)
       .append("div")
       .attr("class", "tooltip");
@@ -208,29 +203,14 @@ function App() {
       // add in our tooltip
       tooltip
         .style("display", "block")
-        .style("position", "fixed")
-        .style("left", `${width + 90}px`)
-        .style("top", `${yPos + 20}px`)
-        .style("background", "blue")
-        .style("border-radius", "5px")
-        .style("color", "white")
-        .style("padding", "5px")
-        .html(`${d.value !== undefined ? d.value.toFixed(2) : "N/A"}`);
+        .style("left", `${xPos + 100}px`)
+        .style("top", `${yPos + 50}px`)
 
-      tooltipRawDate
-        .style("display", "block")
-        .style("position", "fixed")
-        .style("left", `${xPos + 60}px`)
-        .style("top", `${height + 53}px`)
-        .style("background", "blue")
-        .style("border-radius", "5px")
-        .style("color", "white")
-        .style("padding", "5px")
         .html(
-          `${
-            d.date !== undefined
-              ? new Date(d.date).toISOString().slice(0, 10)
-              : "N/A"
+          `<strong>Date:</strong> ${
+            new Date(d.date).toISOString().slice(0, 10) || "N/A"
+          }<br><strong>Value:</strong> ${
+            d.value !== undefined ? d.value.toFixed(2) : "N/A"
           }`
         );
     });
@@ -239,7 +219,6 @@ function App() {
     listeningRect.on("mouseleave", function () {
       circle.transition().duration(50).attr("r", 0);
       tooltip.style("display", "none");
-      tooltipRawDate.style("display", "none");
       tooltipLineX.attr("x1", 0).attr("x2", 0);
       tooltipLineY.attr("y1", 0).attr("y2", 0);
       tooltipLineX.style("display", "none");
