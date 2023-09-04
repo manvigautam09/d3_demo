@@ -1,6 +1,5 @@
-import React, { Fragment, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
-import { sliderBottom } from "d3-simple-slider";
 
 function App() {
   const svgRef = useRef();
@@ -13,7 +12,7 @@ function App() {
     });
     // set the dimensions and margins of the graph
     var margin = { top: 20, right: 20, bottom: 50, left: 70 },
-      width = 960 - margin.left - margin.right,
+      width = 10000 - margin.left - margin.right,
       height = 250 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
@@ -241,69 +240,6 @@ function App() {
       tooltipLineX.style("display", "none");
       tooltipLineY.style("display", "none");
     });
-
-    // Define the slider
-    const sliderRange = sliderBottom()
-      .min(d3.min(data, (d) => d.date))
-      .max(d3.max(data, (d) => d.date))
-      .width(300)
-      .tickFormat(d3.timeFormat("%I:%M:%S:%L %p"))
-      .ticks(3)
-      .default([d3.min(data, (d) => d.date), d3.max(data, (d) => d.date)])
-      .fill("#85bb65");
-
-    sliderRange.on("onchange", (val) => {
-      // Set new domain for x scale
-      x.domain(val);
-
-      // Filter data based on slider values
-      const filteredData = data.filter(
-        (d) => d.date >= val[0] && d.date <= val[1]
-      );
-
-      // Update the line to new domain
-      svg.select(".line").attr("d", valueLine(filteredData));
-
-      // Set new domain for y scale based on new data
-      y.domain([
-        d3.min(filteredData, (d) => d.value),
-        d3.max(filteredData, (d) => d.value),
-      ]);
-
-      // Update the x-axis with new domain
-      svg
-        .select(".x-axis")
-        .transition()
-        .duration(300) // transition duration in ms
-        .call(
-          d3
-            .axisBottom(x)
-            .ticks(d3.timeMillisecond.every(200))
-            .tickFormat(d3.timeFormat("%I:%M:%S:%L %p"))
-        )
-        .selectAll("text")
-        .style("text-anchor", "end")
-        .style("font-size", "5px")
-        .attr("transform", "rotate(-90)");
-
-      // Update the y-axis with new domain
-      svg
-        .select(".y-axis")
-        .transition()
-        .duration(300) // transition duration in ms
-        .call(d3.axisLeft(y));
-    });
-
-    // Add the slider to the DOM
-    const gRange = d3
-      .select("#slider-range")
-      .append("svg")
-      .attr("width", 500)
-      .attr("height", 100)
-      .append("g")
-      .attr("transform", "translate(90,30)");
-
-    gRange.call(sliderRange);
   };
 
   useEffect(() => {
@@ -311,10 +247,15 @@ function App() {
   }, []);
 
   return (
-    <Fragment>
+    <div
+      style={{
+        width: "900px",
+        overflow: "auto",
+        margin: "auto",
+      }}
+    >
       <div ref={svgRef}></div>
-      <div id="slider-range"></div>
-    </Fragment>
+    </div>
   );
 }
 
