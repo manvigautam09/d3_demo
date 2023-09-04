@@ -121,6 +121,7 @@ function App() {
     // add the Line
     var valueLine = d3
       .line()
+      .curve(d3.curveCardinal)
       .x((d) => {
         return x(d.date);
       })
