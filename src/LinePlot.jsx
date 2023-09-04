@@ -1,5 +1,6 @@
-import React, { useEffect, useRef } from "react";
+import React, { Fragment, useEffect, useRef } from "react";
 import * as d3 from "d3";
+import { sliderBottom } from "d3-simple-slider";
 
 function App() {
   const svgRef = useRef();
@@ -24,7 +25,7 @@ function App() {
       .append("g")
       .attr("transform", `translate(${margin.left},     ${margin.top})`);
 
-    //   create tooltip div
+    // create tooltip div
     const tooltip = d3
       .select(svgRef.current)
       .append("div")
@@ -53,6 +54,7 @@ function App() {
     svg
       .append("g")
       .attr("transform", `translate(0, ${height})`)
+      .attr("class", "x-axis")
       .call(
         d3
           .axisBottom(x)
@@ -63,7 +65,7 @@ function App() {
       .style("text-anchor", "end")
       .style("font-size", "5px")
       .attr("transform", "rotate(-90)");
-    svg.append("g").call(d3.axisLeft(y));
+    svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
 
     // adding grid lines
     var yScale = d3
@@ -107,10 +109,11 @@ function App() {
         return x(d.date);
       })
       .y(90);
+
     svg
       .append("path")
       .data([data])
-      .attr("class", "line")
+      .attr("class", "base-line")
       .attr("fill", "none")
       .attr("stroke", "black")
       .attr("stroke-width", 1)
@@ -238,13 +241,81 @@ function App() {
       tooltipLineX.style("display", "none");
       tooltipLineY.style("display", "none");
     });
+
+    // Define the slider
+    const sliderRange = sliderBottom()
+      .min(d3.min(data, (d) => d.date))
+      .max(d3.max(data, (d) => d.date))
+      .width(300)
+      .tickFormat(d3.timeFormat("%I:%M:%S:%L %p"))
+      .ticks(3)
+      .default([d3.min(data, (d) => d.date), d3.max(data, (d) => d.date)])
+      .fill("#85bb65");
+
+    sliderRange.on("onchange", (val) => {
+      // Set new domain for x scale
+      x.domain(val);
+
+      // Filter data based on slider values
+      const filteredData = data.filter(
+        (d) => d.date >= val[0] && d.date <= val[1]
+      );
+
+      // Update the line to new domain
+      svg.select(".line").attr("d", valueLine(filteredData));
+
+      // Set new domain for y scale based on new data
+      y.domain([
+        d3.min(filteredData, (d) => d.value),
+        d3.max(filteredData, (d) => d.value),
+      ]);
+
+      // Update the x-axis with new domain
+      svg
+        .select(".x-axis")
+        .transition()
+        .duration(300) // transition duration in ms
+        .call(
+          d3
+            .axisBottom(x)
+            .ticks(d3.timeMillisecond.every(200))
+            .tickFormat(d3.timeFormat("%I:%M:%S:%L %p"))
+        )
+        .selectAll("text")
+        .style("text-anchor", "end")
+        .style("font-size", "5px")
+        .attr("transform", "rotate(-90)");
+
+      // Update the y-axis with new domain
+      svg
+        .select(".y-axis")
+        .transition()
+        .duration(300) // transition duration in ms
+        .call(d3.axisLeft(y));
+    });
+
+    // Add the slider to the DOM
+    const gRange = d3
+      .select("#slider-range")
+      .append("svg")
+      .attr("width", 500)
+      .attr("height", 100)
+      .append("g")
+      .attr("transform", "translate(90,30)");
+
+    gRange.call(sliderRange);
   };
 
   useEffect(() => {
     createGraph();
   }, []);
 
-  return <div ref={svgRef}></div>;
+  return (
+    <Fragment>
+      <div ref={svgRef}></div>
+      <div id="slider-range"></div>
+    </Fragment>
+  );
 }
 
 export default App;
