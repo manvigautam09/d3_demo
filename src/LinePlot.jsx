@@ -10,9 +10,10 @@ function App() {
       d.date = new Date(d.date);
       d.value = +d.value;
     });
+
     // set the dimensions and margins of the graph
     var margin = { top: 20, right: 20, bottom: 50, left: 70 },
-      width = 10000 - margin.left - margin.right,
+      width = (data.length || 200) * 50 - margin.left - margin.right,
       height = 250 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
@@ -45,7 +46,9 @@ function App() {
       })
     );
     y.domain([
-      -100,
+      d3.min(data, (d) => {
+        return d.value;
+      }),
       d3.max(data, (d) => {
         return d.value;
       }),
@@ -140,7 +143,7 @@ function App() {
     const circle = svg
       .append("circle")
       .attr("r", 0)
-      .attr("fill", "green")
+      .attr("fill", "black")
       .style("stroke", "white")
       .attr("opacity", 0.7)
       .style("pointer-events", "none");
@@ -150,17 +153,17 @@ function App() {
       .append("line")
       .attr("class", "tooltip-line")
       .attr("id", "tooltip-line-x")
-      .attr("stroke", "green")
+      .attr("stroke", "blue")
       .attr("stroke-width", 1)
-      .attr("stroke-dasharray", "2,2");
+      .attr("stroke-dasharray", "8,8");
 
     const tooltipLineY = svg
       .append("line")
       .attr("class", "tooltip-line")
       .attr("id", "tooltip-line-y")
-      .attr("stroke", "green")
+      .attr("stroke", "blue")
       .attr("stroke-width", 1)
-      .attr("stroke-dasharray", "2,2");
+      .attr("stroke-dasharray", "8,8");
 
     // create a listening rectangle
     const listeningRect = svg
@@ -184,7 +187,7 @@ function App() {
       circle.attr("cx", xPos).attr("cy", yPos);
 
       // Add transition for the circle radius
-      circle.transition().duration(50).attr("r", 5);
+      circle.transition().duration(50).attr("r", 3.5);
 
       // Update the position of the black lines
       tooltipLineX
@@ -206,7 +209,7 @@ function App() {
         .style("position", "fixed")
         .style("left", `${width + 90}px`)
         .style("top", `${yPos + 20}px`)
-        .style("background", "green")
+        .style("background", "blue")
         .style("border-radius", "5px")
         .style("color", "white")
         .style("padding", "5px")
@@ -217,7 +220,7 @@ function App() {
         .style("position", "fixed")
         .style("left", `${xPos + 60}px`)
         .style("top", `${height + 53}px`)
-        .style("background", "green")
+        .style("background", "blue")
         .style("border-radius", "5px")
         .style("color", "white")
         .style("padding", "5px")
