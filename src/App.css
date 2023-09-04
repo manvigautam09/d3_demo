@@ -14,4 +14,5 @@ rect {
   border-radius: 5px;
   display: none;
   opacity: 0.75;
+  min-width: 120px;
 }

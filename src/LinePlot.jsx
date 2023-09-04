@@ -6,12 +6,13 @@ function App() {
   const svgRef = useRef();
   const createGraph = async () => {
     // read from csv and format variables
-    let data = await d3.csv("http://localhost:3005/sample_ecg_data_d3.csv");
-    data.forEach((d) => {
+    let res = await d3.csv("http://localhost:3005/sample_ecg_data_d3.csv");
+    let data = [];
+    res.forEach((d) => {
       d.date = new Date(d.date);
       d.value = +d.value;
+      data.push(d);
     });
-
     // set the dimensions and margins of the graph
     var margin = { top: 20, right: 20, bottom: 90, left: 70 },
       width = (data.length || 200) * 50 - margin.left - margin.right,
@@ -206,7 +207,6 @@ function App() {
         .style("display", "block")
         .style("left", `${xPos + 100}px`)
         .style("top", `${yPos + 50}px`)
-
         .html(
           `<strong>Time:</strong> ${
             new Date(d.date).toTimeString().slice(0, 8) || "N/A"
@@ -237,6 +237,7 @@ function App() {
         width: "900px",
         overflow: "auto",
         margin: "auto",
+        position: "relative",
       }}
     >
       <div ref={svgRef}></div>
