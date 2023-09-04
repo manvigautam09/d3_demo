@@ -16,7 +16,7 @@ function App() {
     // set the dimensions and margins of the graph
     var margin = { top: 20, right: 20, bottom: 90, left: 70 },
       width = (data.length || 200) * 50 - margin.left - margin.right,
-      height = 300 - margin.top - margin.bottom;
+      height = 400 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     var svg = d3
@@ -108,7 +108,7 @@ function App() {
       .x((d) => {
         return x(d.date);
       })
-      .y(height / 2 - 0.3);
+      .y(height / 2 - 0.5);
 
     svg
       .append("path")
