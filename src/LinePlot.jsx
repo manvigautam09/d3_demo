@@ -208,8 +208,8 @@ function App() {
         .style("top", `${yPos + 50}px`)
 
         .html(
-          `<strong>Date:</strong> ${
-            new Date(d.date).toISOString().slice(0, 10) || "N/A"
+          `<strong>Time:</strong> ${
+            new Date(d.date).toTimeString().slice(0, 8) || "N/A"
           }<br><strong>Value:</strong> ${
             d.value !== undefined ? d.value.toFixed(2) : "N/A"
           }`
