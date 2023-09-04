@@ -12,9 +12,9 @@ function App() {
     });
 
     // set the dimensions and margins of the graph
-    var margin = { top: 20, right: 20, bottom: 50, left: 70 },
+    var margin = { top: 20, right: 20, bottom: 80, left: 70 },
       width = (data.length || 200) * 50 - margin.left - margin.right,
-      height = 250 - margin.top - margin.bottom;
+      height = 270 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     var svg = d3
@@ -65,7 +65,7 @@ function App() {
       )
       .selectAll("text")
       .style("text-anchor", "end")
-      .style("font-size", "5px")
+      .style("font-size", "10px")
       .attr("transform", "rotate(-90)");
     svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
 
