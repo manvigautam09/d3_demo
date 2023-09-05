@@ -7,7 +7,7 @@ function App() {
   const createGraph = async () => {
     // read from csv and format variables
     // https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv
-    let res = await d3.csv("http://localhost:3005/d3_ecg_dataset.csv");
+    let res = await d3.csv("http://localhost:3005/d3_ecg_dataset_prolaio.csv");
     let data = [];
     res.forEach((d) => {
       d.date = new Date(d.date);
@@ -16,7 +16,7 @@ function App() {
     });
     // set the dimensions and margins of the graph
     var margin = { top: 20, right: 20, bottom: 90, left: 70 },
-      width = (data.length || 200) * 50 - margin.left - margin.right,
+      width = (data.length || 200) * 10 - margin.left - margin.right,
       height = 400 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
@@ -42,14 +42,21 @@ function App() {
         return d.date;
       })
     );
-    y.domain([
-      d3.min(data, (d) => {
-        return d.value;
-      }),
-      d3.max(data, (d) => {
-        return d.value;
-      }),
-    ]);
+
+    let min = d3.min(data, (d) => {
+      return d.value;
+    });
+    let max = d3.max(data, (d) => {
+      return d.value;
+    });
+    const diff = Math.abs(max) - Math.abs(min);
+    if (Math.abs(max) > Math.abs(min)) {
+      min = min - diff;
+    } else if (Math.abs(min) > Math.abs(max)) {
+      max = max + diff;
+    }
+
+    y.domain([min * 2, max * 2]);
     svg
       .append("g")
       .attr("transform", `translate(0, ${height})`)
@@ -57,7 +64,7 @@ function App() {
       .call(
         d3
           .axisBottom(x)
-          .ticks(d3.timeMillisecond.every(200))
+          .ticks(d3.timeMillisecond.every(1500))
           .tickFormat(d3.timeFormat("%I:%M:%S:%L %p"))
       )
       .selectAll("text")
@@ -69,39 +76,47 @@ function App() {
     svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
 
     // adding grid lines
-    var yScale = d3
-      .scaleLinear()
-      .domain([0, d3.max(data, (d) => d.value)])
-      .nice()
-      .range([height, 0]);
-    var yGrid = (g) =>
-      g
-        .style("stroke", "red")
-        .style("stroke-opacity", 0.2)
-        .selectAll("line")
-        .data(yScale.ticks())
-        .join("line")
-        .attr("x1", 0)
-        .attr("x2", width)
-        .attr("y1", (d) => yScale(d))
-        .attr("y2", (d) => yScale(d));
-    svg.append("g").call(yGrid);
-    var xScale = d3
-      .scaleTime()
-      .domain(d3.extent(data, (d) => d.date))
-      .range([0, width]);
-    var xGrid = (g) =>
-      g
-        .style("stroke", "red")
-        .style("stroke-opacity", 0.2)
-        .selectAll("line")
-        .data(xScale.ticks())
-        .join("line")
-        .attr("x1", (d) => xScale(d))
-        .attr("x2", (d) => xScale(d))
-        .attr("y1", 0)
-        .attr("y2", height);
-    svg.append("g").call(xGrid);
+    var x_grid = d3.scaleIdentity().domain([0, width]);
+    var y_grid = d3.scaleIdentity().domain([0, height]);
+
+    svg
+      .selectAll("line.x")
+      .data(x_grid.ticks(200))
+      .enter()
+      .append("line")
+      .attr("class", "minor")
+      .attr("x1", x_grid)
+      .attr("x2", x_grid)
+      .attr("y1", height)
+      .attr("y2", 0)
+      .style("stroke", "red")
+      .style("stroke-opacity", function (d, i) {
+        if (d % 50 !== 0) {
+          return ".05";
+        } else {
+          return ".2";
+        }
+      });
+
+    // Draw Y-axis grid lines
+    svg
+      .selectAll("line.y")
+      .data(y_grid.ticks(25))
+      .enter()
+      .append("line")
+      .attr("class", "minor")
+      .attr("x1", 0)
+      .attr("x2", width)
+      .attr("y1", y_grid)
+      .attr("y2", y_grid)
+      .style("stroke", "red")
+      .style("stroke-opacity", function (d, i) {
+        if (d % 50 !== 0) {
+          return ".05";
+        } else {
+          return ".2";
+        }
+      });
 
     //construct base line
     var baseline = d3
@@ -109,7 +124,7 @@ function App() {
       .x((d) => {
         return x(d.date);
       })
-      .y(height / 2 - 0.5);
+      .y(height / 2);
 
     svg
       .append("path")
