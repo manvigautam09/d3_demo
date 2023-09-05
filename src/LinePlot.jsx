@@ -15,7 +15,7 @@ function App() {
       data.push(d);
     });
     // set the dimensions and margins of the graph
-    var margin = { top: 20, right: 20, bottom: 90, left: 70 },
+    var margin = { top: 20, right: 20, bottom: 100, left: 70 },
       width = (data.length || 200) * 10 - margin.left - margin.right,
       height = 400 - margin.top - margin.bottom;
 
@@ -65,7 +65,12 @@ function App() {
         d3
           .axisBottom(x)
           .ticks(d3.timeMillisecond.every(200))
-          .tickFormat(d3.timeFormat("%I:%M:%S:%L %p"))
+          .tickFormat(function (d) {
+            const formattedTime = d3.timeFormat("%I:%M:%S:%L %p")(d);
+            return formattedTime.replace(/AM|PM/g, (match) =>
+              match.toLowerCase()
+            );
+          })
       )
       .selectAll("text")
       .style("text-anchor", "end")
