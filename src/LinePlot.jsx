@@ -6,6 +6,7 @@ function App() {
   const svgRef = useRef();
   const createGraph = async () => {
     // read from csv and format variables
+    // https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv
     let res = await d3.csv("http://localhost:3005/d3_ecg_dataset.csv");
     let data = [];
     res.forEach((d) => {
