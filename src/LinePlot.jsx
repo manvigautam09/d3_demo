@@ -6,7 +6,7 @@ function App() {
   const svgRef = useRef();
   const createGraph = async () => {
     // read from csv and format variables
-    let res = await d3.csv("http://localhost:3005/sample_ecg_data_d3.csv");
+    let res = await d3.csv("http://localhost:3005/d3_ecg_dataset.csv");
     let data = [];
     res.forEach((d) => {
       d.date = new Date(d.date);
