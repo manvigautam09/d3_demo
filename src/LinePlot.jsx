@@ -1,22 +1,23 @@
 import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
+import "./App.css";
 
 function App() {
   const svgRef = useRef();
   const createGraph = async () => {
     // read from csv and format variables
-    let data = await d3.csv(
-      "https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv"
-    );
-    let parseTime = d3.timeParse("%Y-%m-%d");
-    data.forEach((d) => {
-      d.date = parseTime(d.date);
+    // https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv
+    let res = await d3.csv("http://localhost:3005/d3_ecg_dataset.csv");
+    let data = [];
+    res.forEach((d) => {
+      d.date = new Date(d.date);
       d.value = +d.value;
+      data.push(d);
     });
     // set the dimensions and margins of the graph
-    var margin = { top: 20, right: 20, bottom: 50, left: 70 },
-      width = 960 - margin.left - margin.right,
-      height = 250 - margin.top - margin.bottom;
+    var margin = { top: 20, right: 20, bottom: 90, left: 70 },
+      width = (data.length || 200) * 50 - margin.left - margin.right,
+      height = 400 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
     var svg = d3
@@ -27,14 +28,8 @@ function App() {
       .append("g")
       .attr("transform", `translate(${margin.left},     ${margin.top})`);
 
-    //   create tooltip div
+    // create tooltip div
     const tooltip = d3
-      .select(svgRef.current)
-      .append("div")
-      .attr("class", "tooltip");
-
-    // Create a second tooltip div for raw date
-    const tooltipRawDate = d3
       .select(svgRef.current)
       .append("div")
       .attr("class", "tooltip");
@@ -48,7 +43,9 @@ function App() {
       })
     );
     y.domain([
-      0,
+      d3.min(data, (d) => {
+        return d.value;
+      }),
       d3.max(data, (d) => {
         return d.value;
       }),
@@ -56,8 +53,20 @@ function App() {
     svg
       .append("g")
       .attr("transform", `translate(0, ${height})`)
-      .call(d3.axisBottom(x));
-    svg.append("g").call(d3.axisLeft(y));
+      .attr("class", "x-axis")
+      .call(
+        d3
+          .axisBottom(x)
+          .ticks(d3.timeMillisecond.every(200))
+          .tickFormat(d3.timeFormat("%I:%M:%S:%L %p"))
+      )
+      .selectAll("text")
+      .style("text-anchor", "end")
+      .style("font-size", "10px")
+      .attr("transform", "rotate(-90)")
+      .attr("dx", "-.8em")
+      .attr("dy", "-.6em");
+    svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
 
     // adding grid lines
     var yScale = d3
@@ -94,9 +103,27 @@ function App() {
         .attr("y2", height);
     svg.append("g").call(xGrid);
 
+    //construct base line
+    var baseline = d3
+      .line()
+      .x((d) => {
+        return x(d.date);
+      })
+      .y(height / 2 - 0.5);
+
+    svg
+      .append("path")
+      .data([data])
+      .attr("class", "base-line")
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", 1)
+      .attr("d", baseline);
+
     // add the Line
     var valueLine = d3
       .line()
+      .curve(d3.curveCardinal)
       .x((d) => {
         return x(d.date);
       })
@@ -116,7 +143,7 @@ function App() {
     const circle = svg
       .append("circle")
       .attr("r", 0)
-      .attr("fill", "green")
+      .attr("fill", "black")
       .style("stroke", "white")
       .attr("opacity", 0.7)
       .style("pointer-events", "none");
@@ -126,17 +153,17 @@ function App() {
       .append("line")
       .attr("class", "tooltip-line")
       .attr("id", "tooltip-line-x")
-      .attr("stroke", "green")
+      .attr("stroke", "blue")
       .attr("stroke-width", 1)
-      .attr("stroke-dasharray", "2,2");
+      .attr("stroke-dasharray", "8,8");
 
     const tooltipLineY = svg
       .append("line")
       .attr("class", "tooltip-line")
       .attr("id", "tooltip-line-y")
-      .attr("stroke", "green")
+      .attr("stroke", "blue")
       .attr("stroke-width", 1)
-      .attr("stroke-dasharray", "2,2");
+      .attr("stroke-dasharray", "8,8");
 
     // create a listening rectangle
     const listeningRect = svg
@@ -160,7 +187,7 @@ function App() {
       circle.attr("cx", xPos).attr("cy", yPos);
 
       // Add transition for the circle radius
-      circle.transition().duration(50).attr("r", 5);
+      circle.transition().duration(50).attr("r", 3.5);
 
       // Update the position of the black lines
       tooltipLineX
@@ -179,26 +206,14 @@ function App() {
       // add in our tooltip
       tooltip
         .style("display", "block")
-        .style("position", "fixed")
-        .style("left", `${width + 90}px`)
-        .style("top", `${yPos + 20}px`)
-        .style("background", "green")
-        .style("border-radius", "5px")
-        .style("color", "white")
-        .style("padding", "5px")
-        .html(`${d.value !== undefined ? d.value.toFixed(2) : "N/A"}`);
-
-      tooltipRawDate
-        .style("display", "block")
-        .style("position", "fixed")
-        .style("left", `${xPos + 60}px`)
-        .style("top", `${height + 53}px`)
-        .style("background", "green")
-        .style("border-radius", "5px")
-        .style("color", "white")
-        .style("padding", "5px")
+        .style("left", `${xPos + 100}px`)
+        .style("top", `${yPos + 50}px`)
         .html(
-          `${d.date !== undefined ? d.date.toISOString().slice(0, 10) : "N/A"}`
+          `<strong>Time:</strong> ${
+            new Date(d.date).toTimeString().slice(0, 8) || "N/A"
+          }<br><strong>Value:</strong> ${
+            d.value !== undefined ? d.value.toFixed(2) : "N/A"
+          }`
         );
     });
 
@@ -206,7 +221,6 @@ function App() {
     listeningRect.on("mouseleave", function () {
       circle.transition().duration(50).attr("r", 0);
       tooltip.style("display", "none");
-      tooltipRawDate.style("display", "none");
       tooltipLineX.attr("x1", 0).attr("x2", 0);
       tooltipLineY.attr("y1", 0).attr("y2", 0);
       tooltipLineX.style("display", "none");
@@ -218,7 +232,18 @@ function App() {
     createGraph();
   }, []);
 
-  return <div ref={svgRef}></div>;
+  return (
+    <div
+      style={{
+        width: "900px",
+        overflow: "auto",
+        margin: "auto",
+        position: "relative",
+      }}
+    >
+      <div ref={svgRef}></div>
+    </div>
+  );
 }
 
 export default App;
