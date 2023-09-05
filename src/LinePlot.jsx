@@ -64,7 +64,7 @@ function App() {
       .call(
         d3
           .axisBottom(x)
-          .ticks(d3.timeMillisecond.every(1500))
+          .ticks(d3.timeMillisecond.every(200))
           .tickFormat(d3.timeFormat("%I:%M:%S:%L %p"))
       )
       .selectAll("text")
