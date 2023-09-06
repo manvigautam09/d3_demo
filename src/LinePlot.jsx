@@ -35,6 +35,47 @@ function App() {
       .append("div")
       .attr("class", "tooltip");
 
+    // adding grid lines
+    var x_grid = d3.scaleIdentity().domain([0, width]);
+    var y_grid = d3.scaleIdentity().domain([0, height]);
+
+    svg
+      .selectAll("line.x")
+      .data(x_grid.ticks(100))
+      .enter()
+      .append("line")
+      .attr("class", "minor")
+      .attr("x1", x_grid)
+      .attr("x2", x_grid)
+      .attr("y1", 0)
+      .attr("y2", height)
+      .style("stroke", function (d, i) {
+        if (d % 50 !== 0) {
+          return "#f3eaea";
+        } else {
+          return "#f9beba";
+        }
+      });
+
+    // Draw Y-axis grid lines
+    svg
+      .selectAll("line.y")
+      .data(y_grid.ticks(25))
+      .enter()
+      .append("line")
+      .attr("class", "minor")
+      .attr("x1", 0)
+      .attr("x2", width)
+      .attr("y1", y_grid)
+      .attr("y2", y_grid)
+      .style("stroke", function (d, i) {
+        if (d % 50 !== 0) {
+          return "#f3eaea";
+        } else {
+          return "#f9beba";
+        }
+      });
+
     // Add X axis and Y axis
     var x = d3.scaleTime().range([0, width]);
     var y = d3.scaleLinear().range([height, 0]);
@@ -80,49 +121,6 @@ function App() {
       .attr("dx", "-.8em")
       .attr("dy", "-.6em");
     svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
-
-    // adding grid lines
-    var x_grid = d3.scaleIdentity().domain([0, width]);
-    var y_grid = d3.scaleIdentity().domain([0, height]);
-
-    svg
-      .selectAll("line.x")
-      .data(x_grid.ticks(100))
-      .enter()
-      .append("line")
-      .attr("class", "minor")
-      .attr("x1", x_grid)
-      .attr("x2", x_grid)
-      .attr("y1", 0)
-      .attr("y2", height)
-      .style("stroke", "red")
-      .style("stroke-opacity", function (d, i) {
-        if (d % 50 !== 0) {
-          return ".05";
-        } else {
-          return ".2";
-        }
-      });
-
-    // Draw Y-axis grid lines
-    svg
-      .selectAll("line.y")
-      .data(y_grid.ticks(25))
-      .enter()
-      .append("line")
-      .attr("class", "minor")
-      .attr("x1", 0)
-      .attr("x2", width)
-      .attr("y1", y_grid)
-      .attr("y2", y_grid)
-      .style("stroke", "red")
-      .style("stroke-opacity", function (d, i) {
-        if (d % 50 !== 0) {
-          return ".05";
-        } else {
-          return ".2";
-        }
-      });
 
     //construct base line
     var baseline = d3
