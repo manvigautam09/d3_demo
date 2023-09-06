@@ -172,7 +172,7 @@ function App() {
       .append("line")
       .attr("class", "tooltip-line")
       .attr("id", "tooltip-line-x")
-      .attr("stroke", "#524ace")
+      .attr("stroke", "#1f1ced")
       .attr("stroke-width", 1)
       .attr("stroke-dasharray", "8,8");
 
@@ -180,7 +180,7 @@ function App() {
       .append("line")
       .attr("class", "tooltip-line")
       .attr("id", "tooltip-line-y")
-      .attr("stroke", "#524ace")
+      .attr("stroke", "#1f1ced")
       .attr("stroke-width", 1)
       .attr("stroke-dasharray", "8,8");
 
