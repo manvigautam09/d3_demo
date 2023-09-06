@@ -86,14 +86,14 @@ function App() {
 
     svg
       .selectAll("line.x")
-      .data(x_grid.ticks(200))
+      .data(x_grid.ticks(100))
       .enter()
       .append("line")
       .attr("class", "minor")
       .attr("x1", x_grid)
       .attr("x2", x_grid)
-      .attr("y1", height)
-      .attr("y2", 0)
+      .attr("y1", 0)
+      .attr("y2", height)
       .style("stroke", "red")
       .style("stroke-opacity", function (d, i) {
         if (d % 50 !== 0) {
@@ -106,7 +106,7 @@ function App() {
     // Draw Y-axis grid lines
     svg
       .selectAll("line.y")
-      .data(y_grid.ticks(25))
+      .data(y_grid.ticks(50))
       .enter()
       .append("line")
       .attr("class", "minor")
