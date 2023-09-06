@@ -106,7 +106,7 @@ function App() {
     // Draw Y-axis grid lines
     svg
       .selectAll("line.y")
-      .data(y_grid.ticks(50))
+      .data(y_grid.ticks(25))
       .enter()
       .append("line")
       .attr("class", "minor")
