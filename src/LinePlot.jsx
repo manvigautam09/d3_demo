@@ -15,16 +15,17 @@ function App() {
       data.push(d);
     });
     // set the dimensions and margins of the graph
-    var margin = { top: 20, right: 20, bottom: 100, left: 70 },
+    const margin = { top: 20, right: 20, bottom: 100, left: 60 },
       width = (data.length || 200) * 10 - margin.left - margin.right,
       height = 400 - margin.top - margin.bottom;
 
     // append the svg object to the body of the page
-    var svg = d3
+    let svg = d3
       .select(svgRef.current)
       .append("svg")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
+      .attr("style", "background-color:#F3F3F3")
       .append("g")
       .attr("transform", `translate(${margin.left},     ${margin.top})`);
 
