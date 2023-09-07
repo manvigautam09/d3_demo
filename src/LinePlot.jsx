@@ -14,10 +14,13 @@ function App() {
       d.value = +d.value;
       data.push(d);
     });
+
     // set the dimensions and margins of the graph
-    const margin = { top: 50, right: 20, bottom: 100, left: 60 },
-      width = (data.length || 200) * 10 - margin.left - margin.right,
-      height = 400 - margin.top - margin.bottom;
+    const margin = { top: 30, right: 20, bottom: 100, left: 60 };
+    let width = (data.length || 200) * 10 - margin.left - margin.right,
+      height = 350 - margin.top - margin.bottom;
+    width = width - (width % 50);
+    height = height - (height % 50);
 
     // append the svg object to the body of the page
     let svg = d3
@@ -99,7 +102,7 @@ function App() {
       max = max + Math.abs(diff);
     }
 
-    y.domain([min * 2, max * 2]);
+    y.domain([min, max]);
     svg
       .append("g")
       .attr("transform", `translate(0, ${height})`)
@@ -107,7 +110,7 @@ function App() {
       .call(
         d3
           .axisBottom(x)
-          .ticks(d3.timeMillisecond.every(200))
+          .ticks(d3.timeMillisecond.every(50))
           .tickFormat(function (d) {
             const formattedTime = d3.timeFormat("%I:%M:%S:%L %p")(d);
             return formattedTime.replace(/AM|PM/g, (match) =>
@@ -121,7 +124,7 @@ function App() {
       .attr("transform", "rotate(-90)")
       .attr("dx", "-.8em")
       .attr("dy", "-.6em");
-    svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
+    // svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
 
     //construct base line
     var baseline = d3
