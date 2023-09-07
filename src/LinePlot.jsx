@@ -15,7 +15,7 @@ function App() {
       data.push(d);
     });
     // set the dimensions and margins of the graph
-    const margin = { top: 20, right: 20, bottom: 100, left: 60 },
+    const margin = { top: 50, right: 20, bottom: 100, left: 60 },
       width = (data.length || 200) * 10 - margin.left - margin.right,
       height = 400 - margin.top - margin.bottom;
 
@@ -41,7 +41,7 @@ function App() {
 
     svg
       .selectAll("line.x")
-      .data(x_grid.ticks(100))
+      .data(x_grid.ticks(data.length))
       .enter()
       .append("line")
       .attr("class", "minor")
