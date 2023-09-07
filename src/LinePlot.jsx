@@ -7,10 +7,10 @@ function App() {
   const createGraph = async () => {
     // read from csv and format variables
     // https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv
-    let res = await d3.csv("http://localhost:3005/d3_ecg_dataset_prolaio.csv");
+    let res = await d3.csv("http://localhost:3005/ECG_sample_d3.csv");
     let data = [];
     res.forEach((d) => {
-      d.date = new Date(d.date);
+      d.time = new Date(d.time);
       d.value = +d.value;
       data.push(d);
     });
@@ -81,7 +81,7 @@ function App() {
     var y = d3.scaleLinear().range([height, 0]);
     x.domain(
       d3.extent(data, (d) => {
-        return d.date;
+        return d.time;
       })
     );
 
@@ -91,11 +91,12 @@ function App() {
     let max = d3.max(data, (d) => {
       return d.value;
     });
+
     const diff = Math.abs(max) - Math.abs(min);
     if (Math.abs(max) > Math.abs(min)) {
-      min = min - diff;
+      min = min - Math.abs(diff);
     } else if (Math.abs(min) > Math.abs(max)) {
-      max = max + diff;
+      max = max + Math.abs(diff);
     }
 
     y.domain([min * 2, max * 2]);
@@ -126,7 +127,7 @@ function App() {
     var baseline = d3
       .line()
       .x((d) => {
-        return x(d.date);
+        return x(d.time);
       })
       .y(height / 2);
 
@@ -144,7 +145,7 @@ function App() {
       .line()
       .curve(d3.curveCardinal)
       .x((d) => {
-        return x(d.date);
+        return x(d.time);
       })
       .y((d) => {
         return y(d.value);
@@ -193,13 +194,13 @@ function App() {
 
     listeningRect.on("mousemove", function (event) {
       const [xCoord] = d3.pointer(event, this);
-      const bisectDate = d3.bisector((d) => d.date).left;
+      const bisectDate = d3.bisector((d) => d.time).left;
       const x0 = x.invert(xCoord);
       const i = bisectDate(data, x0, 1);
       const d0 = data[i - 1];
       const d1 = data[i];
-      const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-      const xPos = x(d.date);
+      const d = x0 - d0.time > d1.time - x0 ? d1 : d0;
+      const xPos = x(d.time);
       const yPos = y(d.value);
 
       // UpDate the circle position
@@ -229,7 +230,7 @@ function App() {
         .style("top", `${yPos + 50}px`)
         .html(
           `<strong>Time:</strong> ${
-            new Date(d.date).toTimeString().slice(0, 8) || "N/A"
+            new Date(d.time).toTimeString().slice(0, 8) || "N/A"
           }<br><strong>Value:</strong> ${
             d.value !== undefined ? d.value.toFixed(2) : "N/A"
           }`
