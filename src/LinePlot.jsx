@@ -1,9 +1,14 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as d3 from "d3";
 import "./App.css";
 
 function App() {
   const svgRef = useRef();
+
+  const margin = { top: 30, right: 20, bottom: 100, left: 60 };
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+
   const createGraph = async () => {
     // read from csv and format variables
     // https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv
@@ -16,18 +21,17 @@ function App() {
     });
 
     // set the dimensions and margins of the graph
-    const margin = { top: 30, right: 20, bottom: 100, left: 60 };
-    let width = (data.length || 200) * 10 - margin.left - margin.right,
-      height = 350 - margin.top - margin.bottom;
-    width = width - (width % 50);
-    height = height - (height % 50);
+    let widthComp = (data.length || 200) * 10 - margin.left - margin.right,
+      heightComp = 350 - margin.top - margin.bottom;
+    setWidth(widthComp - (widthComp % 50));
+    setHeight(heightComp - (heightComp % 50));
 
     // append the svg object to the body of the page
     let svg = d3
       .select(svgRef.current)
       .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
+      .attr("width", widthComp + margin.left + margin.right)
+      .attr("height", heightComp + margin.top + margin.bottom)
       .attr("style", "background-color:#F3F3F3")
       .append("g")
       .attr("transform", `translate(${margin.left},     ${margin.top})`);
@@ -39,8 +43,8 @@ function App() {
       .attr("class", "tooltip");
 
     // adding grid lines
-    var x_grid = d3.scaleIdentity().domain([0, width]);
-    var y_grid = d3.scaleIdentity().domain([0, height]);
+    var x_grid = d3.scaleIdentity().domain([0, widthComp]);
+    var y_grid = d3.scaleIdentity().domain([0, heightComp]);
 
     svg
       .selectAll("line.x")
@@ -51,7 +55,7 @@ function App() {
       .attr("x1", x_grid)
       .attr("x2", x_grid)
       .attr("y1", 0)
-      .attr("y2", height)
+      .attr("y2", heightComp)
       .style("stroke", function (d, i) {
         if (d % 50 !== 0) {
           return "#f3eaea";
@@ -68,7 +72,7 @@ function App() {
       .append("line")
       .attr("class", "minor")
       .attr("x1", 0)
-      .attr("x2", width)
+      .attr("x2", widthComp)
       .attr("y1", y_grid)
       .attr("y2", y_grid)
       .style("stroke", function (d, i) {
@@ -80,8 +84,8 @@ function App() {
       });
 
     // Add X axis and Y axis
-    var x = d3.scaleTime().range([0, width]);
-    var y = d3.scaleLinear().range([height, 0]);
+    var x = d3.scaleTime().range([0, widthComp]);
+    var y = d3.scaleLinear().range([heightComp, 0]);
     x.domain(
       d3.extent(data, (d) => {
         return d.time;
@@ -105,7 +109,7 @@ function App() {
     y.domain([min, max]);
     svg
       .append("g")
-      .attr("transform", `translate(0, ${height})`)
+      .attr("transform", `translate(0, ${heightComp})`)
       .attr("class", "x-axis")
       .call(
         d3
@@ -132,7 +136,7 @@ function App() {
       .x((d) => {
         return x(d.time);
       })
-      .y(height / 2);
+      .y(heightComp / 2);
 
     svg
       .append("path")
@@ -191,8 +195,8 @@ function App() {
     // create a listening rectangle
     const listeningRect = svg
       .append("rect")
-      .attr("width", width)
-      .attr("height", height)
+      .attr("width", widthComp)
+      .attr("height", heightComp)
       .attr("opacity", 0);
 
     listeningRect.on("mousemove", function (event) {
@@ -218,13 +222,13 @@ function App() {
         .attr("x1", xPos)
         .attr("x2", xPos)
         .attr("y1", 0)
-        .attr("y2", height);
+        .attr("y2", heightComp);
       tooltipLineY
         .style("display", "block")
         .attr("y1", yPos)
         .attr("y2", yPos)
         .attr("x1", 0)
-        .attr("x2", width);
+        .attr("x2", widthComp);
 
       // add in our tooltip
       tooltip
@@ -247,6 +251,7 @@ function App() {
 
   useEffect(() => {
     createGraph();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
