@@ -229,8 +229,8 @@ function App() {
       // add in our tooltip
       tooltip
         .style("display", "block")
-        .style("left", `${xPos + 100}px`)
-        .style("top", `${yPos + 50}px`)
+        .style("left", `${xPos}px`)
+        .style("top", `${yPos}px`)
         .html(`${d.value !== undefined ? d.value.toFixed(2) : "N/A"}`);
     });
 
@@ -256,9 +256,15 @@ function App() {
         overflow: "auto",
         margin: "auto",
         position: "relative",
+        marginTop: 20,
+        display: "flex",
+        flexDirection: "column",
       }}
     >
-      <div ref={svgRef}></div>
+      <div style={{ position: "fixed" }}>
+        <button>Add Range</button>
+      </div>
+      <div style={{ marginTop: 40 }} ref={svgRef}></div>
     </div>
   );
 }
