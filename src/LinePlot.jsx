@@ -231,13 +231,7 @@ function App() {
         .style("display", "block")
         .style("left", `${xPos + 100}px`)
         .style("top", `${yPos + 50}px`)
-        .html(
-          `<strong>Time:</strong> ${
-            new Date(d.time).toTimeString().slice(0, 8) || "N/A"
-          }<br><strong>Value:</strong> ${
-            d.value !== undefined ? d.value.toFixed(2) : "N/A"
-          }`
-        );
+        .html(`${d.value !== undefined ? d.value.toFixed(2) : "N/A"}`);
     });
 
     // listening rectangle mouse leave function
