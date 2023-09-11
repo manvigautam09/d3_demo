@@ -130,9 +130,9 @@ function App() {
     // Add range lines
     svg
       .append("line")
-      .attr("x1", x(new Date("2023-07-27 12:00:00.132812500"))) //<<== change your code here
+      .attr("x1", x(new Date("2023-07-27 12:00:00.132812500")))
       .attr("y1", 0)
-      .attr("x2", x(new Date("2023-07-27 12:00:00.132812500"))) //<<== and here
+      .attr("x2", x(new Date("2023-07-27 12:00:00.132812500")))
       .attr("y2", heightComp)
       .style("stroke-width", 3)
       .style("stroke", "green")
@@ -140,9 +140,9 @@ function App() {
 
     svg
       .append("line")
-      .attr("x1", x(new Date("2023-07-27 12:00:00.203125000"))) //<<== change your code here
+      .attr("x1", x(new Date("2023-07-27 12:00:00.203125000")))
       .attr("y1", 0)
-      .attr("x2", x(new Date("2023-07-27 12:00:00.203125000"))) //<<== and here
+      .attr("x2", x(new Date("2023-07-27 12:00:00.203125000")))
       .attr("y2", heightComp)
       .style("stroke-width", 3)
       .style("stroke", "green")
