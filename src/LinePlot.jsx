@@ -6,7 +6,7 @@ function App() {
   const svgRef = useRef();
 
   const createGraph = async () => {
-    // read from csv and format variables
+    // Read from csv and format variables
     // https://raw.githubusercontent.com/holtzy/data_to_viz/master/Example_dataset/3_TwoNumOrdered_comma.csv
     let res = await d3.csv("http://localhost:3005/ECG_sample_d3.csv");
     let data = [];
@@ -17,13 +17,13 @@ function App() {
     });
     const margin = { top: 30, right: 20, bottom: 100, left: 60 };
 
-    // set the dimensions and margins of the graph
+    // Set the dimensions and margins of the graph
     let widthComp = (data.length || 200) * 10 - margin.left - margin.right,
       heightComp = 350 - margin.top - margin.bottom;
     widthComp = widthComp - (widthComp % 50);
     heightComp = heightComp - (heightComp % 50);
 
-    // append the svg object to the body of the page
+    // Append the svg object to the body of the page
     let svg = d3
       .select(svgRef.current)
       .append("svg")
@@ -33,13 +33,13 @@ function App() {
       .append("g")
       .attr("transform", `translate(${margin.left},     ${margin.top})`);
 
-    // create tooltip div
+    // Create tooltip div
     const tooltip = d3
       .select(svgRef.current)
       .append("div")
       .attr("class", "tooltip");
 
-    // adding grid lines
+    // Adding grid lines
     var x_grid = d3.scaleIdentity().domain([0, widthComp]);
     var y_grid = d3.scaleIdentity().domain([0, heightComp]);
 
@@ -125,9 +125,30 @@ function App() {
       .attr("transform", "rotate(-90)")
       .attr("dx", "-.8em")
       .attr("dy", "-.6em");
-    // svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y));
+    // svg.append("g").attr("class", "y-axis").call(d3.axisLeft(y)); // Y-axis
 
-    //construct base line
+    // Add range lines
+    svg
+      .append("line")
+      .attr("x1", x(new Date("2023-07-27 12:00:00.132812500"))) //<<== change your code here
+      .attr("y1", 0)
+      .attr("x2", x(new Date("2023-07-27 12:00:00.132812500"))) //<<== and here
+      .attr("y2", heightComp)
+      .style("stroke-width", 3)
+      .style("stroke", "green")
+      .style("fill", "none");
+
+    svg
+      .append("line")
+      .attr("x1", x(new Date("2023-07-27 12:00:00.203125000"))) //<<== change your code here
+      .attr("y1", 0)
+      .attr("x2", x(new Date("2023-07-27 12:00:00.203125000"))) //<<== and here
+      .attr("y2", heightComp)
+      .style("stroke-width", 3)
+      .style("stroke", "green")
+      .style("fill", "none");
+
+    // Construct base line
     var baseline = d3
       .line()
       .x((d) => {
@@ -144,7 +165,7 @@ function App() {
       .attr("stroke-width", 1)
       .attr("d", baseline);
 
-    // add the Line
+    // Add the Line
     var valueLine = d3
       .line()
       .curve(d3.curveCardinal)
@@ -189,7 +210,7 @@ function App() {
       .attr("stroke-width", 1)
       .attr("stroke-dasharray", "8,8");
 
-    // create a listening rectangle
+    // Create a listening rectangle
     const listeningRect = svg
       .append("rect")
       .attr("width", widthComp)
@@ -207,7 +228,7 @@ function App() {
       const xPos = x(d.time);
       const yPos = y(d.value);
 
-      // UpDate the circle position
+      // Update the circle position
       circle.attr("cx", xPos).attr("cy", yPos);
 
       // Add transition for the circle radius
@@ -227,7 +248,7 @@ function App() {
         .attr("x1", 0)
         .attr("x2", widthComp);
 
-      // add in our tooltip
+      // Add in our tooltip
       tooltip
         .style("display", "block")
         .style("left", `${xPos}px`)
@@ -235,7 +256,7 @@ function App() {
         .html(`${d.value !== undefined ? d.value.toFixed(2) : "N/A"}`);
     });
 
-    // listening rectangle mouse leave function
+    // Listening rectangle mouse leave function
     listeningRect.on("mouseleave", function () {
       circle.transition().duration(50).attr("r", 0);
       tooltip.style("display", "none");
