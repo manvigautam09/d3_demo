@@ -2,7 +2,10 @@ import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import "./App.css";
 
-function App() {
+function App({
+  startRange = "2023-07-27 12:00:00.132812500",
+  endRange = "2023-07-27 12:00:00.203125000",
+}) {
   const svgRef = useRef();
 
   const createGraph = async () => {
@@ -38,6 +41,16 @@ function App() {
       .select(svgRef.current)
       .append("div")
       .attr("class", "tooltip");
+
+    // Create paragraph for text on range lines
+    const startP = d3
+      .select(svgRef.current)
+      .append("p")
+      .attr("class", "start-text");
+    const endP = d3
+      .select(svgRef.current)
+      .append("p")
+      .attr("class", "end-text");
 
     // Adding grid lines
     var x_grid = d3.scaleIdentity().domain([0, widthComp]);
@@ -130,23 +143,42 @@ function App() {
     // Add range lines
     svg
       .append("line")
-      .attr("x1", x(new Date("2023-07-27 12:00:00.132812500")))
+      .attr("x1", x(new Date(startRange)))
       .attr("y1", 0)
-      .attr("x2", x(new Date("2023-07-27 12:00:00.132812500")))
+      .attr("x2", x(new Date(startRange)))
+      .attr("y2", heightComp)
+      .style("stroke-width", 3)
+      .style("stroke", "green")
+      .style("fill", "none");
+    // Label for Start
+    startP
+      .style("display", "block")
+      .style(
+        "left",
+        `${margin.left - 10 + x(new Date("2023-07-27 12:00:00.132812500"))}px`
+      )
+      .style("top", `${margin.top + 12}px`)
+      .html(`Start`);
+
+    svg
+      .append("line")
+      .attr("x1", x(new Date(endRange)))
+      .attr("y1", 0)
+      .attr("x2", x(new Date(endRange)))
       .attr("y2", heightComp)
       .style("stroke-width", 3)
       .style("stroke", "green")
       .style("fill", "none");
 
-    svg
-      .append("line")
-      .attr("x1", x(new Date("2023-07-27 12:00:00.203125000")))
-      .attr("y1", 0)
-      .attr("x2", x(new Date("2023-07-27 12:00:00.203125000")))
-      .attr("y2", heightComp)
-      .style("stroke-width", 3)
-      .style("stroke", "green")
-      .style("fill", "none");
+    // Label for End
+    endP
+      .style("display", "block")
+      .style(
+        "left",
+        `${margin.left - 10 + x(new Date("2023-07-27 12:00:00.203125000"))}px`
+      )
+      .style("top", `${margin.top + 12}px`)
+      .html(`End`);
 
     // Construct base line
     var baseline = d3
