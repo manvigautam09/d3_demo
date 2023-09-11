@@ -1,13 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 import "./App.css";
 
 function App() {
   const svgRef = useRef();
-
-  const margin = { top: 30, right: 20, bottom: 100, left: 60 };
-  const [width, setWidth] = useState(0);
-  const [height, setHeight] = useState(0);
 
   const createGraph = async () => {
     // read from csv and format variables
@@ -19,12 +15,13 @@ function App() {
       d.value = +d.value;
       data.push(d);
     });
+    const margin = { top: 30, right: 20, bottom: 100, left: 60 };
 
     // set the dimensions and margins of the graph
     let widthComp = (data.length || 200) * 10 - margin.left - margin.right,
       heightComp = 350 - margin.top - margin.bottom;
-    setWidth(widthComp - (widthComp % 50));
-    setHeight(heightComp - (heightComp % 50));
+    widthComp = widthComp - (widthComp % 50);
+    heightComp = heightComp - (heightComp % 50);
 
     // append the svg object to the body of the page
     let svg = d3
@@ -266,9 +263,6 @@ function App() {
         flexDirection: "column",
       }}
     >
-      <div style={{ position: "fixed" }}>
-        <button>Add Range</button>
-      </div>
       <div style={{ marginTop: 40 }} ref={svgRef}></div>
     </div>
   );
